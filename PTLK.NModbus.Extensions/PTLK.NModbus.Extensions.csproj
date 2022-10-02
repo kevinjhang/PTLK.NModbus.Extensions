@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Description>Support build modbus slave over custom model.</Description>
+		<PackageId>PTLK.NModbus.Extensions</PackageId>
+		<PackageTags>nmodbus extension</PackageTags>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<Authors>PTLK</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/kevinjhang/PTLK.NModbus.Extensions</PackageProjectUrl>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="PTLK.Common.Extensions" Version="2022.10.2.700" />
+		<PackageReference Include="NModbus" Version="3.0.72" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- We don't consume the analyzers in this library itself,
+         but we reference the project to add a package dependency so users of this library will automatically get the analyzers. -->
+		<ProjectReference Include="..\PTLK.NModbus.Extensions.Analyzers\PTLK.NModbus.Extensions.Analyzers.csproj" />
+	</ItemGroup>
+
+	<Target Name="NugetPackAutoVersioning" AfterTargets="Build">
+		<Exec Command="dotnet pack -p:PackageVersion=$([System.DateTime]::Now.ToString(&quot;yyyy.MM.dd.HHmm&quot;)) --no-build --configuration $(Configuration) --output &quot;$(SolutionDir)../NuGet&quot;" />
+	</Target>
+</Project>
+

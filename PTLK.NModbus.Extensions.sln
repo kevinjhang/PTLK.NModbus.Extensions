@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PTLK.NModbus.Extensions", "PTLK.NModbus.Extensions\PTLK.NModbus.Extensions.csproj", "{E3C25C9A-DC5D-4622-BC95-FD19F4C64E16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PTLK.NModbus.Extensions.Analyzers.Tests", "PTLK.NModbus.Extensions.Analyzers.Tests\PTLK.NModbus.Extensions.Analyzers.Tests.csproj", "{9885F79C-4ACD-41B7-BFD7-873B040051B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PTLK.NModbus.Extensions.Analyzers", "PTLK.NModbus.Extensions.Analyzers\PTLK.NModbus.Extensions.Analyzers.csproj", "{4897EB0D-1A70-4362-98D3-59DE3C5C93B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E3C25C9A-DC5D-4622-BC95-FD19F4C64E16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3C25C9A-DC5D-4622-BC95-FD19F4C64E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3C25C9A-DC5D-4622-BC95-FD19F4C64E16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3C25C9A-DC5D-4622-BC95-FD19F4C64E16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9885F79C-4ACD-41B7-BFD7-873B040051B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9885F79C-4ACD-41B7-BFD7-873B040051B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9885F79C-4ACD-41B7-BFD7-873B040051B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9885F79C-4ACD-41B7-BFD7-873B040051B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4897EB0D-1A70-4362-98D3-59DE3C5C93B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4897EB0D-1A70-4362-98D3-59DE3C5C93B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4897EB0D-1A70-4362-98D3-59DE3C5C93B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4897EB0D-1A70-4362-98D3-59DE3C5C93B5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {577A5794-14EA-45EE-B8DD-EE79F38F573B}
+	EndGlobalSection
+EndGlobal
