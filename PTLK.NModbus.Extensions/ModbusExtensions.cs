@@ -332,8 +332,8 @@ namespace PTLK.NModbus.Extensions
         {
             public DeviceDataStore(IModbusDevice device)
             {
-                HoldingPointSource = new PointSource(3, device);
-                InputPointSource = new PointSource(4, device);
+                HoldingPointSource = new DevicePointSource(3, device);
+                InputPointSource = new DevicePointSource(4, device);
             }
 
             public IPointSource<bool>? CoilDiscretes => throw new NotImplementedException();
@@ -341,16 +341,16 @@ namespace PTLK.NModbus.Extensions
             public IPointSource<ushort>? HoldingRegisters => HoldingPointSource;
             public IPointSource<ushort>? InputRegisters => InputPointSource;
 
-            private readonly PointSource HoldingPointSource;
-            private readonly PointSource InputPointSource;
+            private readonly DevicePointSource HoldingPointSource;
+            private readonly DevicePointSource InputPointSource;
         }
 
-        class PointSource : IPointSource<ushort>
+        class DevicePointSource : IPointSource<ushort>
         {
-            public PointSource(int fc, IModbusDevice device)
+            public DevicePointSource(int fc, IModbusDevice device)
             {
-                Properties = device.GetType().GetProperties()
-                    .Select(c => new ModbusProperty(device, c))
+                DeviceProperties = device.GetType().GetProperties()
+                    .Select(c => new DeviceProperty(device, c))
                     .Where(c => c.Verified && c.ModbusInfo.FC == fc)
                     .ToDictionary(c => c.ModbusInfo.Address, c => c);
             }
@@ -368,7 +368,7 @@ namespace PTLK.NModbus.Extensions
                     int step = 1;
                     for (int i = startAddress; i < startAddress + numberOfPoints; i += step)
                     {
-                        if (Properties.TryGetValue(i, out ModbusProperty? propety))
+                        if (DeviceProperties.TryGetValue(i, out DeviceProperty? propety))
                         {
                             ushort[]? value = propety.GetValue();
 
@@ -404,7 +404,7 @@ namespace PTLK.NModbus.Extensions
                     int step = 1;
                     for (int i = startAddress; i < startAddress + points.Length; i += step)
                     {
-                        if (Properties.TryGetValue(i, out ModbusProperty? propety))
+                        if (DeviceProperties.TryGetValue(i, out DeviceProperty? propety))
                         {
                             propety.SetValue(points.Skip(i - startAddress).ToArray());
 
@@ -423,12 +423,12 @@ namespace PTLK.NModbus.Extensions
             }
 
             private readonly SemaphoreSlim _syncRoot = new(1, 1);
-            private readonly Dictionary<int, ModbusProperty> Properties;
+            private readonly Dictionary<int, DeviceProperty> DeviceProperties;
         }
 
-        class ModbusProperty
+        class DeviceProperty
         {
-            public ModbusProperty(IModbusDevice device, PropertyInfo propertyInfo)
+            public DeviceProperty(IModbusDevice device, PropertyInfo propertyInfo)
             {
                 Device = device;
                 PropertyInfo = propertyInfo;
