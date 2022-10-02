@@ -465,14 +465,14 @@ namespace PTLK.NModbus.Extensions
                 {
                     TypeCode.Boolean => value.ToBoolean().ToUInt16(),
                     TypeCode.Int16 => ((short)(Convert.ToDouble(value) / scale)).ToUInt16(),
-                    TypeCode.Int32 => ((int)(Convert.ToDouble(value) / scale)).ToUInt16(false),
                     TypeCode.UInt16 => ((ushort)(Convert.ToDouble(value) / scale)).ToUInt16(),
+                    TypeCode.Int32 => ((int)(Convert.ToDouble(value) / scale)).ToUInt16(false),
                     TypeCode.UInt32 => ((uint)(Convert.ToDouble(value) / scale)).ToUInt16(false),
-                    TypeCode.Single => ((float)(Convert.ToDouble(value) / scale)).ToUInt16(false),
-                    TypeCode.String => ((string)value).ToUInt16(length, true),
                     TypeCode.Int64 => ((long)(Convert.ToDouble(value) / scale)).ToUInt16(false, false),
                     TypeCode.UInt64 => ((ulong)(Convert.ToDouble(value) / scale)).ToUInt16(false, false),
+                    TypeCode.Single => ((float)(Convert.ToDouble(value) / scale)).ToUInt16(false),
                     TypeCode.Double => (Convert.ToDouble(value) / scale).ToUInt16(false, false),
+                    TypeCode.String => ((string)value).ToUInt16(length, true),
                     _ => null
                 };
             }
@@ -485,14 +485,14 @@ namespace PTLK.NModbus.Extensions
                 {
                     TypeCode.Boolean => points.ToBoolean(0),
                     TypeCode.Int16 => points.ToInt16(0) * scale,
-                    TypeCode.Int32 => points.ToInt32(0, false) * scale,
                     TypeCode.UInt16 => points.ToUInt16(0) * scale,
+                    TypeCode.Int32 => points.ToInt32(0, false) * scale,
                     TypeCode.UInt32 => points.ToUInt32(0, false) * scale,
-                    TypeCode.Single => points.ToFloat(0, false) * scale,
-                    TypeCode.String => points.ToString(0, length, true),
                     TypeCode.Int64 => points.ToInt64(0, false, false) * scale,
                     TypeCode.UInt64 => points.ToUInt64(0, false, false) * scale,
+                    TypeCode.Single => points.ToFloat(0, false) * scale,
                     TypeCode.Double => points.ToDouble(0, false, false) * scale,
+                    TypeCode.String => points.ToString(0, length, true),
                     _ => null
                 };
 
