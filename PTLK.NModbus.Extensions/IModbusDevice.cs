@@ -2,6 +2,5 @@
 {
     public interface IModbusDevice
     {
-        byte UnitId { get; }
     }
 }

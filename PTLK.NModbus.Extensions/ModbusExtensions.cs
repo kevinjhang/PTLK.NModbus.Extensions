@@ -298,11 +298,11 @@ namespace PTLK.NModbus.Extensions
         #endregion
 
         #region ModbusSlave factory
-        public static IModbusSlave CreateSlave(this IModbusFactory factory, IModbusDevice device)
+        public static IModbusSlave CreateSlave(this IModbusFactory factory, byte unitId, IModbusDevice device)
         {
             ISlaveDataStore dataStore = new DeviceDataStore(device);
 
-            return factory.CreateSlave(device.UnitId, dataStore);
+            return factory.CreateSlave(unitId, dataStore);
         }
 
         public static int GetWordsLength(this TypeCode type, int bytesLength)
