@@ -14,13 +14,11 @@ using PTLK.NModbus.Extensions;
 
 class ModbusDevice : IModbusDevice
 {
-    public byte UnitId => 1;
-
     [ModbusDataItem(Address = 1)]
-    public int DataItem { get; set; }
+    public uint DataItem { get; set; }
 
     [ModbusDataItem(Address = 3)]
-    public int DataItem2 { get; set; }
+    public uint DataItem2 { get; set; }
 }
 ";
             await Verify.VerifyAnalyzerAsync(test);
@@ -34,16 +32,14 @@ using PTLK.NModbus.Extensions;
 
 class ModbusDevice : IModbusDevice
 {
-    public byte UnitId => 1;
-
     [ModbusDataItem(Address = 1)]
-    public int DataItem { get; set; }
+    public uint DataItem { get; set; }
 
     [ModbusDataItem(Address = 2)]
-    public int DataItem2 { get; set; }
+    public uint DataItem2 { get; set; }
 }
 ";
-            await Verify.VerifyAnalyzerAsync(test, 4, 1);
+            await Verify.VerifyAnalyzerAsync(test, 10, 17);
         }
     }
 }
