@@ -14,14 +14,14 @@ namespace PTLK.NModbus.Extensions.Analyzers
 
         protected override string MessageFormat => "Cannot assign same address renge both dataItems";
 
-        protected override bool Illegal(SyntaxNodeAnalysisContext context, IEnumerable<(IPropertySymbol Prop, AttributeData Attr)> dataItems, out Location? location)
+        protected override bool Illegal(SyntaxNodeAnalysisContext context, IEnumerable<(int Depth, IPropertySymbol Prop, AttributeData Attr)> dataItems, out Location? location)
         {
-            IEnumerable<IGrouping<object, (IPropertySymbol Prop, AttributeData Attr)>> groups =
+            IEnumerable<IGrouping<object, (int Depth, IPropertySymbol Prop, AttributeData Attr)>> groups =
                 dataItems.GroupBy(c => GetNamedArgumentValue(c.Attr, "FC", 3));
 
             foreach (var group in groups)
             {
-                var orderedGroup = group.OrderBy(c => GetNamedArgumentValue(c.Attr, "Address", 0));
+                var orderedGroup = group.OrderBy(c => GetNamedArgumentValue(c.Attr, "Address", 0)).ThenByDescending(c => c.Depth).Select(c => (c.Prop, c.Attr));
 
                 int checkPoint = -1;
                 foreach (var (prop, attr) in orderedGroup)
