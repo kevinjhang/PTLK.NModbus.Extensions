@@ -29,7 +29,7 @@ using PTLK.NModbus.Extensions;
 
 class ModbusDevice : IModbusDevice
 {
-    [ModbusDataItem(FC = 1)]
+    [ModbusDataItem(FC = 5)]
     public uint DataItem { get; set; }
 }
 ";

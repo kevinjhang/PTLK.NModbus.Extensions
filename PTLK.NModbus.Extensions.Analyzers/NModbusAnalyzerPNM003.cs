@@ -14,10 +14,10 @@ namespace PTLK.NModbus.Extensions.Analyzers
 
         protected override bool Illegal(SymbolAnalysisContext context, IPropertySymbol prop, AttributeData attr)
         {
-            int fc = (int)GetNamedArgumentValue(attr, "Address", 0);
+            int address = (int)GetNamedArgumentValue(attr, "Address", 0);
             int length = (int)GetNamedArgumentValue(attr, "Length", 0);
             ITypeSymbol type = GetUnderlyingType(prop.Type) ?? prop.Type;
-            return fc < 0 || fc + GetWordLengthOfType(type.SpecialType, length) - 1 > 65535;
+            return address < 0 || address + GetWordLengthOfType(type.SpecialType, length) - 1 > 65535;
         }
     }
 }

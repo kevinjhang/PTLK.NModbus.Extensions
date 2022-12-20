@@ -10,12 +10,12 @@ namespace PTLK.NModbus.Extensions.Analyzers
 
         protected override string Title => "FC over range";
 
-        protected override string MessageFormat => "Cannot assign FC number without 3 or 4";
+        protected override string MessageFormat => "Cannot assign FC number without 1 to 4";
 
         protected override bool Illegal(SymbolAnalysisContext context, IPropertySymbol prop, AttributeData attr)
         {
             int fc = (int)GetNamedArgumentValue(attr, "FC", 3);
-            return fc < 3 || fc > 4;
+            return fc < 1 || fc > 4;
         }
     }
 }

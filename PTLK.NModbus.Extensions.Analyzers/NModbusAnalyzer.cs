@@ -62,17 +62,27 @@ namespace PTLK.NModbus.Extensions.Analyzers
             };
         }
 
-        protected readonly SpecialType[] AllowTypes = new[] {
-            SpecialType.System_Boolean,
-            SpecialType.System_Int16,
-            SpecialType.System_UInt16,
-            SpecialType.System_Int32,
-            SpecialType.System_UInt32,
-            SpecialType.System_Int64,
-            SpecialType.System_UInt64,
-            SpecialType.System_Single,
-            SpecialType.System_Double,
-            SpecialType.System_String
-        };
+        protected static SpecialType[] GetAllowTypes(int fc)
+        {
+            return fc switch
+            {
+                1 or 2 => new[] {
+                    SpecialType.System_Boolean
+                },
+                3 or 4 => new[] {
+                    SpecialType.System_Boolean,
+                    SpecialType.System_Int16,
+                    SpecialType.System_UInt16,
+                    SpecialType.System_Int32,
+                    SpecialType.System_UInt32,
+                    SpecialType.System_Int64,
+                    SpecialType.System_UInt64,
+                    SpecialType.System_Single,
+                    SpecialType.System_Double,
+                    SpecialType.System_String
+                },
+                _ => new SpecialType[0]
+            };
+        }
     }
 }

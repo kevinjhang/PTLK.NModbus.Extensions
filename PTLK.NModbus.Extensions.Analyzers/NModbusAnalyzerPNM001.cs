@@ -11,11 +11,12 @@ namespace PTLK.NModbus.Extensions.Analyzers
 
         protected override string Title => "Data type not support";
 
-        protected override string MessageFormat => "Cannot support data type without Boolean, Int16, UInt16, Int32, UInt32, Int64, UInt64, Single, Double and String";
+        protected override string MessageFormat => "Cannot support data type without Boolean, Int16, UInt16, Int32, UInt32, Int64, UInt64, Single, Double and String when FC is 3 or 4. Only support Boolean when FC is 1 or 2";
 
         protected override bool Illegal(SymbolAnalysisContext context, IPropertySymbol prop, AttributeData attr)
         {
-            var allowTypes = AllowTypes.Select(c => context.Compilation.GetSpecialType(c));
+            int fc = (int)GetNamedArgumentValue(attr, "FC", 3);
+            var allowTypes = GetAllowTypes(fc).Select(c => context.Compilation.GetSpecialType(c));
             ITypeSymbol type = GetUnderlyingType(prop.Type) ?? prop.Type;
             return !allowTypes.Contains(type, SymbolEqualityComparer.Default);
         }

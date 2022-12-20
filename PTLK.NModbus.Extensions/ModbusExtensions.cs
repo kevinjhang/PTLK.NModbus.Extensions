@@ -2,6 +2,7 @@
 using PTLK.Common.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -332,22 +333,104 @@ namespace PTLK.NModbus.Extensions
         {
             public DeviceDataStore(IModbusDevice device)
             {
-                HoldingPointSource = new DevicePointSource(3, device);
-                InputPointSource = new DevicePointSource(4, device);
+                CoilPointSource = new DevicePointSourceBool(1, device);
+                CoilInputPointSource = new DevicePointSourceBool(2, device);
+                HoldingPointSource = new DevicePointSourceUshort(3, device);
+                InputPointSource = new DevicePointSourceUshort(4, device);
             }
 
-            public IPointSource<bool>? CoilDiscretes => throw new NotImplementedException();
-            public IPointSource<bool>? CoilInputs => throw new NotImplementedException();
+            public IPointSource<bool>? CoilDiscretes => CoilPointSource;
+            public IPointSource<bool>? CoilInputs => CoilInputPointSource;
             public IPointSource<ushort>? HoldingRegisters => HoldingPointSource;
             public IPointSource<ushort>? InputRegisters => InputPointSource;
 
-            private readonly DevicePointSource HoldingPointSource;
-            private readonly DevicePointSource InputPointSource;
+            private readonly DevicePointSourceBool CoilPointSource;
+            private readonly DevicePointSourceBool CoilInputPointSource;
+            private readonly DevicePointSourceUshort HoldingPointSource;
+            private readonly DevicePointSourceUshort InputPointSource;
         }
 
-        class DevicePointSource : IPointSource<ushort>
+        class DevicePointSourceBool : IPointSource<bool>
         {
-            public DevicePointSource(int fc, IModbusDevice device)
+            public DevicePointSourceBool(int fc, IModbusDevice device)
+            {
+                DeviceProperties = device.GetType().GetProperties()
+                    .Select(c => new DeviceProperty(device, c))
+                    .Where(c => c.Verified && c.ModbusInfo.FC == fc)
+                    .ToDictionary(c => c.ModbusInfo.Address, c => c);
+            }
+
+            public bool[] ReadPoints(ushort startAddress, ushort numberOfPoints)
+            {
+                bool lockTaken = _syncRoot.Wait(1000);
+
+                if (!lockTaken) throw new InvalidModbusRequestException(SlaveExceptionCodes.SlaveDeviceBusy);
+
+                try
+                {
+                    bool[] result = new bool[numberOfPoints];
+
+                    int step = 1;
+                    for (int i = startAddress; i < startAddress + numberOfPoints; i += step)
+                    {
+                        if (DeviceProperties.TryGetValue(i, out DeviceProperty? propety))
+                        {
+                            bool value = propety.GetBool();
+
+                            result[i - startAddress] = value;
+
+                            step = propety.WordLength;
+                        }
+                        else
+                        {
+                            step = 1;
+                        }
+                    }
+
+                    return result;
+                }
+                finally
+                {
+                    _syncRoot.Release();
+                }
+            }
+
+            public void WritePoints(ushort startAddress, bool[] points)
+            {
+                bool lockTaken = _syncRoot.Wait(1000);
+
+                if (!lockTaken) throw new InvalidModbusRequestException(SlaveExceptionCodes.SlaveDeviceBusy);
+
+                try
+                {
+                    int step = 1;
+                    for (int i = startAddress; i < startAddress + points.Length; i += step)
+                    {
+                        if (DeviceProperties.TryGetValue(i, out DeviceProperty? propety))
+                        {
+                            propety.SetBool(points.Skip(i - startAddress).First());
+
+                            step = propety.WordLength;
+                        }
+                        else
+                        {
+                            step = 1;
+                        }
+                    }
+                }
+                finally
+                {
+                    _syncRoot.Release();
+                }
+            }
+
+            private readonly SemaphoreSlim _syncRoot = new(1, 1);
+            private readonly Dictionary<int, DeviceProperty> DeviceProperties;
+        }
+
+        class DevicePointSourceUshort : IPointSource<ushort>
+        {
+            public DevicePointSourceUshort(int fc, IModbusDevice device)
             {
                 DeviceProperties = device.GetType().GetProperties()
                     .Select(c => new DeviceProperty(device, c))
@@ -364,28 +447,43 @@ namespace PTLK.NModbus.Extensions
                 try
                 {
                     ushort[] result = new ushort[numberOfPoints];
+                    Exception? ex = null;
 
                     int step = 1;
                     for (int i = startAddress; i < startAddress + numberOfPoints; i += step)
                     {
-                        if (DeviceProperties.TryGetValue(i, out DeviceProperty? propety))
+                        try
                         {
-                            ushort[]? value = propety.GetValue();
-
-                            if (value != null)
+                            if (DeviceProperties.TryGetValue(i, out DeviceProperty? propety))
                             {
-                                Array.Copy(value, 0, result, i - startAddress, value.Length);
-                            }
+                                ushort[]? value = propety.GetValue();
 
-                            step = propety.WordLength;
+                                if (value != null)
+                                {
+                                    Array.Copy(value, 0, result, i - startAddress, value.Length);
+                                }
+
+                                step = propety.WordLength;
+                            }
+                            else
+                            {
+                                step = 1;
+                            }
                         }
-                        else
+                        catch (Exception e)
                         {
-                            step = 1;
+                            ex = e;
                         }
                     }
-
-                    return result;
+                    
+                    if (ex == null)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        throw ex;
+                    }
                 }
                 finally
                 {
@@ -453,6 +551,16 @@ namespace PTLK.NModbus.Extensions
             public bool Verified { get; private set; }
 
             public int WordLength { get; private set; }
+
+            public bool GetBool()
+            {
+                return PropertyInfo.GetValue(Device).ToBoolean();
+            }
+
+            public void SetBool(bool value)
+            {
+                PropertyInfo.SetValue(Device, value);
+            }
 
             public ushort[]? GetValue()
             {
