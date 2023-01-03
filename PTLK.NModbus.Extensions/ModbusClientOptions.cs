@@ -50,6 +50,9 @@ namespace PTLK.NModbus.Extensions
 
         public LoggingLevel LoggingLevel { get; set; }
 
+        [Range(0, 65534)]
+        public int StartAddress { get; set; }
+
         public static void Validate(string identity, object instance)
         {
             ValidationContext validationContext = new(instance);

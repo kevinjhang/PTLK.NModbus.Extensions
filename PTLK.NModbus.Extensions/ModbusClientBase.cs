@@ -95,40 +95,47 @@ namespace PTLK.NModbus.Extensions
 
             int unitId = ModbusClientOptions.UnitId;
             int fc = modbusInfo.FC;
-            ushort address = (ushort)modbusInfo.Address;
+            ushort address = (ushort)(ModbusClientOptions.StartAddress + modbusInfo.Address);
             ushort length = (ushort)typeCode.GetWordsLength(modbusInfo.Length);
-
-            Array? points = fc switch
-            {
-                1 or 2 => Poller.GetValue<bool>(unitId, fc, address, length),
-                3 or 4 => Poller.GetValue<ushort>(unitId, fc, address, length),
-                _ => null
-            };
-
             object? defaultValue = type.IsValueType ? Activator.CreateInstance(type) : null;
-            if (points == null) return defaultValue;
 
-            ushort[] payload = points.Cast<ushort>().ToArray();
-            bool swapWord = ModbusClientOptions.SwapWord;
-            double scale = modbusInfo.Scale;
-
-            object? value = typeCode switch
+            try
             {
-                TypeCode.Boolean => payload.ToBoolean(0),
-                TypeCode.Int16 => payload.ToInt16(0) * scale,
-                TypeCode.UInt16 => payload.ToUInt16(0) * scale,
-                TypeCode.Int32 => payload.ToInt32(0, swapWord) * scale,
-                TypeCode.UInt32 => payload.ToUInt32(0, swapWord) * scale,
-                TypeCode.Int64 => payload.ToInt64(0, swapWord, swapWord) * scale,
-                TypeCode.UInt64 => payload.ToUInt64(0, swapWord, swapWord) * scale,
-                TypeCode.Single => payload.ToFloat(0, swapWord) * scale,
-                TypeCode.Double => payload.ToDouble(0, swapWord, swapWord) * scale,
-                TypeCode.String => payload.ToString(0, length, true),
-                _ => null
-            };
+                Array? points = fc switch
+                {
+                    1 or 2 => Poller.GetValue<bool>(unitId, fc, address, length),
+                    3 or 4 => Poller.GetValue<ushort>(unitId, fc, address, length),
+                    _ => null
+                };
 
-            if (value == null) return defaultValue;
-            return Convert.ChangeType(value, type);
+                if (points == null) return defaultValue;
+
+                ushort[] payload = points.Cast<ushort>().ToArray();
+                bool swapWord = ModbusClientOptions.SwapWord;
+                double scale = modbusInfo.Scale;
+
+                object? value = typeCode switch
+                {
+                    TypeCode.Boolean => payload.ToBoolean(0),
+                    TypeCode.Int16 => payload.ToInt16(0) * scale,
+                    TypeCode.UInt16 => payload.ToUInt16(0) * scale,
+                    TypeCode.Int32 => payload.ToInt32(0, swapWord) * scale,
+                    TypeCode.UInt32 => payload.ToUInt32(0, swapWord) * scale,
+                    TypeCode.Int64 => payload.ToInt64(0, swapWord, swapWord) * scale,
+                    TypeCode.UInt64 => payload.ToUInt64(0, swapWord, swapWord) * scale,
+                    TypeCode.Single => payload.ToFloat(0, swapWord) * scale,
+                    TypeCode.Double => payload.ToDouble(0, swapWord, swapWord) * scale,
+                    TypeCode.String => payload.ToString(0, length, true),
+                    _ => null
+                };
+
+                if (value == null) return defaultValue;
+                return Convert.ChangeType(value, type);
+            }
+            catch
+            {
+                return defaultValue;
+            }
         }
 
         protected void Set(dynamic? value)
@@ -191,7 +198,7 @@ namespace PTLK.NModbus.Extensions
             }
 
             byte unitId = (byte)ModbusClientOptions.UnitId;
-            ushort address = (ushort)modbusInfo.Address;
+            ushort address = (ushort)(ModbusClientOptions.StartAddress + modbusInfo.Address);
 
             switch (fc)
             {
