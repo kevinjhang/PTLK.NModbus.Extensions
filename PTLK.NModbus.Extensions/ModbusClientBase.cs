@@ -90,6 +90,7 @@ namespace PTLK.NModbus.Extensions
             ModbusDataItemAttribute modbusInfo = ModbusInfos[propName];
             PropertyInfo propertyInfo = PropertyInfos[propName];
             Type type = propertyInfo.PropertyType;
+            object? defaultValue = type.IsValueType ? Activator.CreateInstance(type) : null;
             type = Nullable.GetUnderlyingType(type) ?? type;
             TypeCode typeCode = Type.GetTypeCode(type);
 
@@ -97,7 +98,6 @@ namespace PTLK.NModbus.Extensions
             int fc = modbusInfo.FC;
             ushort address = (ushort)(ModbusClientOptions.StartAddress + modbusInfo.Address);
             ushort length = (ushort)typeCode.GetWordsLength(modbusInfo.Length);
-            object? defaultValue = type.IsValueType ? Activator.CreateInstance(type) : null;
 
             try
             {
