@@ -2,7 +2,6 @@ using NModbus;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Ports;
-using System.Linq;
 
 namespace PTLK.NModbus.Extensions
 {
